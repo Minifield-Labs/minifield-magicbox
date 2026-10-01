@@ -60,5 +60,3 @@ jobs:
           package-manager-cache: false
       - name: Publish the verified archive to npm
         run: npm publish ./package/*.tgz --access public --provenance --ignore-scripts
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_BOOTSTRAP_TOKEN }}
