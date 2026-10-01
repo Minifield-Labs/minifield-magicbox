@@ -1,0 +1,80 @@
+{
+  "name": "@minifield-labs/magicbox",
+  "version": "0.1.0",
+  "description": "A considered React textbox for turning free text into structured data.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Minifield-Labs/minifield-magicbox.git"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./headless": {
+      "types": "./dist/headless.d.ts",
+      "import": "./dist/headless.js"
+    },
+    "./spans": {
+      "types": "./dist/spans.d.ts",
+      "import": "./dist/spans.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 4327 --strictPort",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint src demo tests scripts",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "build": "node scripts/build.mjs && tsc -p tsconfig.build.json",
+    "build:demo": "vite build",
+    "check:package": "node scripts/check-package.mjs",
+    "prepack": "npm run build && npm run check:package",
+    "test": "vitest run",
+    "test:browser": "playwright test",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build && npm run check:package && npm run build:demo && npm run test:browser"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.11.1",
+    "@playwright/test": "1.58.2",
+    "@testing-library/react": "16.3.0",
+    "@testing-library/user-event": "14.6.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "esbuild": "0.28.2",
+    "jsdom": "26.1.0",
+    "oxfmt": "0.61.0",
+    "oxlint": "1.76.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "typescript": "5.9.3",
+    "vite": "7.3.6",
+    "vitest": "4.1.11"
+  },
+  "peerDependencies": {
+    "react": ">=18.3.0 <20",
+    "react-dom": ">=18.3.0 <20"
+  },
+  "overrides": {
+    "playwright-core": "1.58.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
