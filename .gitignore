@@ -6,4 +6,7 @@ test-results/
 .local/
 *.tgz
 .DS_Store
+.env
+.env.*
+!.env.example
 tests/consumer/package-lock.json

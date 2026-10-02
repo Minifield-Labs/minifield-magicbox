@@ -4,6 +4,9 @@ import { MagicBox } from "../src";
 import "../src/styles.css";
 import "./style.css";
 import { caseNote, extractSample, meetingNote, sampleSchema, sampleSpans } from "./fixtures";
+import { extractWithRuntime } from "./runtime";
+
+const sampleMode = import.meta.env.VITE_MAGICBOX_DEMO === "sample";
 
 function App() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
@@ -68,7 +71,7 @@ function App() {
           key={revision}
           value={text}
           schema={sampleSchema}
-          {...(sample === "blank"
+          {...(sample === "blank" || !sampleMode
             ? {}
             : {
                 defaultSpans: sampleSpans(initial),
@@ -78,7 +81,7 @@ function App() {
             source: "Source document",
           }}
           onValueChange={setText}
-          onExtract={extractSample}
+          onExtract={sampleMode ? extractSample : extractWithRuntime}
           theme={theme}
           unstyled={skin === "custom"}
           {...(skin === "custom" ? { className: "custom-box" } : {})}
