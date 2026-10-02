@@ -1,6 +1,6 @@
 # MagicBox
 
-<img width="2560" height="1800" alt="image" src="https://github.com/user-attachments/assets/a34a85a5-c890-45b3-9083-3f7e3b0c063e" />
+<img width="2560" height="1800" alt="MagicBox textbox with highlighted source text, an extracted-field list, and selected-field details" src="https://github.com/user-attachments/assets/a34a85a5-c890-45b3-9083-3f7e3b0c063e" />
 
 A React textbox for extracting typed data from free text. React 18.3 and 19.
 
