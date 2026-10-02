@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { extractPointers, sourceRange, type PointerEncoder } from "../demo/pointer";
+import { sampleSchema } from "../demo/fixtures";
 
 describe("pointer extraction host", () => {
   it("preserves UTF-16 offsets for split emoji tokens and trims source whitespace", () => {
@@ -37,14 +38,19 @@ describe("pointer extraction host", () => {
         ],
       })),
     };
-    expect(await extractPointers(encoder, source, ["Person", "Email"])).toEqual([
+    expect(
+      await extractPointers(encoder, source, [
+        { name: "Customer", question: "Who needs the delivery?" },
+        sampleSchema.fields[2]!,
+      ]),
+    ).toEqual([
       {
-        id: "Person-3",
-        label: "Person",
+        id: "Customer-3",
+        label: "Customer",
         start: 3,
         end: 6,
         value: "Ada",
-        tone: "sage",
+        tone: "sky",
       },
     ]);
     const input = JSON.parse(vi.mocked(encoder.predict).mock.calls[0]![0]);
@@ -57,6 +63,10 @@ describe("pointer extraction host", () => {
     });
     expect(input.questions[1].query_index).toBe(4);
     expect(vi.mocked(encoder.tokenize).mock.calls.every(([, bos]) => bos)).toBe(true);
+    expect(encoder.tokenize).toHaveBeenCalledWith(
+      "Type: extract\nQuestion: Who needs the delivery?",
+      true,
+    );
   });
 
   it("rejects over-capacity input and invalid model spans", async () => {
@@ -64,7 +74,9 @@ describe("pointer extraction host", () => {
       tokenize: () => ({ ids: Array(513).fill(1), offsets: [[0, 0]] }),
       predict: vi.fn(),
     };
-    await expect(extractPointers(encoder, "Ada", ["Person"])).rejects.toThrow("Shorten");
+    await expect(extractPointers(encoder, "Ada", [sampleSchema.fields[3]!])).rejects.toThrow(
+      "Shorten",
+    );
     expect(encoder.predict).not.toHaveBeenCalled();
     encoder.tokenize = () => ({
       ids: [1, 2],
@@ -74,7 +86,7 @@ describe("pointer extraction host", () => {
       ],
     });
     encoder.predict = async () => ({ answers: [{ type: "extract", span: [0, 2], presence: 1 }] });
-    await expect(extractPointers(encoder, "Ada", ["Person"])).rejects.toThrow(
+    await expect(extractPointers(encoder, "Ada", [sampleSchema.fields[3]!])).rejects.toThrow(
       "invalid token range",
     );
   });

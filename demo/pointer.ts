@@ -13,13 +13,7 @@ export interface PointerEncoder {
   }>;
 }
 
-const questions = {
-  Card: "What payment card is mentioned?",
-  Address: "What is the customer's delivery address?",
-  Email: "What is the email address?",
-  Person: "What is the name of the person mentioned?",
-} as const;
-const tones = { Card: "sky", Address: "ember", Email: "lilac", Person: "sage" } as const;
+const tones = ["sky", "ember", "lilac", "sage"] as const;
 
 // Convert byte boundaries to UTF-16, including tokens that split a Unicode scalar.
 export function sourceRange(text: string, start: number, end: number): [number, number] {
@@ -51,7 +45,7 @@ export async function extractPointers(
   const ids: number[] = [];
   const layouts = fields.map((field) => {
     const query = ids.length;
-    ids.push(...encoder.tokenize(`Type: extract\nQuestion: ${questions[field]}`, true).ids);
+    ids.push(...encoder.tokenize(`Type: extract\nQuestion: ${field.question}`, true).ids);
     const absent = ids.length;
     ids.push(...encoder.tokenize("Answer: not stated in the text", true).ids);
     return { query, absent };
@@ -79,7 +73,7 @@ export async function extractPointers(
   if (result.answers.length !== fields.length)
     throw new Error("The model returned incomplete results.");
   return result.answers.flatMap((answer, index) => {
-    const label = fields[index]!;
+    const label = fields[index]!.name;
     if (
       answer.type !== "extract" ||
       !Number.isFinite(answer.presence) ||
@@ -106,7 +100,7 @@ export async function extractPointers(
         start,
         end,
         value: text.slice(start, end),
-        tone: tones[label],
+        tone: tones[index % tones.length]!,
       },
     ];
   });

@@ -43,11 +43,22 @@ test("real pointer inference, cancellation, recovery, source offsets, and respon
   expect(modelRequests).toBeGreaterThan(0);
   await page.getByRole("button", { name: "Edit text" }).click();
   await page.getByRole("textbox").fill("Email Priya at priya@example.org.");
+  await page.locator(".schema-editor summary").click();
+  await page.getByRole("button", { name: "Remove field 4", exact: true }).click();
+  await page.getByRole("button", { name: "Remove field 2", exact: true }).click();
+  await page.getByRole("button", { name: "Remove field 1", exact: true }).click();
+  await page.getByLabel("Field name 1", { exact: true }).fill("Recipient");
+  await page
+    .getByLabel("Extraction question 1", { exact: true })
+    .fill("Which email address is mentioned?");
+  await page.getByRole("button", { name: "Apply schema" }).click();
   await page.getByRole("button", { name: "Extract", exact: true }).click();
   await expect(page.getByRole("status")).toHaveText(/\d+ fields?/, { timeout: 120_000 });
   await expect(page.getByRole("region", { name: "Source document" })).toHaveText(
     "Email Priya at priya@example.org.",
   );
+  await expect(page.locator('[data-part="field-kind"]')).toHaveText("Recipient");
+  await expect(page.locator('[data-part="field-text"]')).toHaveText("priya@example.org");
   expect(requests.filter((url) => url.endsWith("/model.safetensors"))).toHaveLength(modelRequests);
   expect(requests.some((url) => url.includes("telemetry"))).toBe(false);
   expect(

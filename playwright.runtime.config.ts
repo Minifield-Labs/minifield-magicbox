@@ -15,5 +15,6 @@ export default defineConfig({
     command: "npm run dev -- --port 4337",
     url: "http://127.0.0.1:4337",
     env: { VITE_MAGICBOX_DEMO: "runtime" },
+    reuseExistingServer: !process.env.CI,
   },
 });
