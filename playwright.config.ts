@@ -32,6 +32,7 @@ export default defineConfig({
   ],
   webServer: {
     command: "npm run dev",
+    env: { VITE_MAGICBOX_DEMO: "sample" },
     url: "http://127.0.0.1:4327",
     reuseExistingServer: !process.env.CI,
   },

@@ -166,7 +166,9 @@ it("keeps the committed schema request valid through an abandoned concurrent sch
 
 it("uses the demo schema to select which fields are extracted", () => {
   const source = "Annette Kowalski uses annette@example.org and Visa ending 7301.";
-  const results = sampleSpans(source, { fields: ["Email"] });
+  const results = sampleSpans(source, {
+    fields: [{ name: "Email", question: "What is the email?" }],
+  });
   expect(results).toHaveLength(1);
   expect(results[0]).toMatchObject({ label: "Email", value: "annette@example.org" });
 });

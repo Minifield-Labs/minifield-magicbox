@@ -4,6 +4,10 @@ import { MagicBox } from "../src";
 import "../src/styles.css";
 import "./style.css";
 import { caseNote, extractSample, meetingNote, sampleSchema, sampleSpans } from "./fixtures";
+import { extractWithRuntime } from "./runtime";
+import { SchemaEditor } from "./schema-editor";
+
+const sampleMode = import.meta.env.VITE_MAGICBOX_DEMO === "sample";
 
 function App() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
@@ -11,6 +15,7 @@ function App() {
   const [sample, setSample] = useState<"case" | "meeting" | "blank">("case");
   const [revision, setRevision] = useState(0);
   const [text, setText] = useState(caseNote);
+  const [schema, setSchema] = useState(sampleSchema);
   const initial = sample === "case" ? caseNote : sample === "meeting" ? meetingNote : "";
   function choose(next: typeof sample) {
     setSample(next);
@@ -64,21 +69,22 @@ function App() {
             </div>
           </div>
         </div>
+        <SchemaEditor schema={schema} onApply={setSchema} />
         <MagicBox
           key={revision}
           value={text}
-          schema={sampleSchema}
-          {...(sample === "blank"
+          schema={schema}
+          {...(sample === "blank" || !sampleMode
             ? {}
             : {
-                defaultSpans: sampleSpans(initial),
+                defaultSpans: sampleSpans(initial, schema),
                 sourceTitle: sample === "case" ? "Case note · FC-2026-1198" : "Meeting note",
               })}
           labels={{
             source: "Source document",
           }}
           onValueChange={setText}
-          onExtract={extractSample}
+          onExtract={sampleMode ? extractSample : extractWithRuntime}
           theme={theme}
           unstyled={skin === "custom"}
           {...(skin === "custom" ? { className: "custom-box" } : {})}

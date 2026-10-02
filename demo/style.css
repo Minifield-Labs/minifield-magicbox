@@ -113,9 +113,82 @@ h1 {
   color: var(--ink);
 }
 .demo button:focus-visible,
-.demo a:focus-visible {
+.demo a:focus-visible,
+.schema-editor summary:focus-visible,
+.schema-editor input:focus-visible {
   outline: 2px solid #f09169;
   outline-offset: 2px;
+}
+.schema-editor {
+  margin-bottom: 16px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+}
+.schema-editor summary {
+  padding: 12px 0;
+  cursor: pointer;
+}
+.schema-editor summary span {
+  margin-left: 12px;
+  color: var(--muted);
+}
+.schema-editor form {
+  padding: 4px 0 16px;
+}
+.schema-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 180px) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 14px;
+  padding: 10px 0;
+}
+.schema-row label {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+  color: var(--muted);
+}
+.schema-editor input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--page);
+  color: var(--ink);
+  font: inherit;
+}
+.schema-editor button {
+  padding: 10px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.schema-editor button:hover {
+  background: var(--raised);
+}
+.schema-editor button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.schema-editor button[type="submit"] {
+  background: var(--raised);
+}
+.schema-editor [role="alert"] {
+  margin: 10px 0;
+}
+.schema-actions,
+.schema-actions > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.schema-actions {
+  margin-top: 12px;
 }
 .custom-box {
   padding: 22px;
@@ -290,6 +363,16 @@ h1 {
   }
 }
 @media (max-width: 480px) {
+  .schema-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .schema-row label:nth-child(2) {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
   .site-header,
   .demo-main {
     width: calc(100% - 24px);

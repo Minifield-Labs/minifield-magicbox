@@ -1,10 +1,17 @@
 import type { ExtractionContext, MagicBoxSpan } from "../src";
 
 export interface SampleSchema {
-  readonly fields: readonly ("Card" | "Address" | "Email" | "Person")[];
+  readonly fields: readonly { readonly name: string; readonly question: string }[];
 }
 
-export const sampleSchema: SampleSchema = { fields: ["Card", "Address", "Email", "Person"] };
+export const sampleSchema: SampleSchema = {
+  fields: [
+    { name: "Card", question: "What payment card is mentioned?" },
+    { name: "Address", question: "What is the customer's delivery address?" },
+    { name: "Email", question: "What is the email address?" },
+    { name: "Person", question: "What is the name of the person mentioned?" },
+  ],
+};
 
 export const caseNote = [
   'Both fraudulent charges reversed ($2,220.00 total). New card issued: Visa ending 7301, expiring 05/2030, delivered to 2847 Mission Street, Apt 4B, San Francisco, CA 94110 on 2026-02-25. Merchant "GLOBEX-DIRECT-88" added to blocklist BL-7741. Fraud case FC-2026-1198 closed.',
@@ -36,7 +43,7 @@ export function sampleSpans(text: string, schema: SampleSchema = sampleSchema): 
     { regex: /Sofia Marino/g, label: "Person", tone: "sage", confidence: 0.96 },
   ] as const;
   for (const { regex, label, tone, confidence } of patterns) {
-    if (!schema.fields.includes(label)) continue;
+    if (!schema.fields.some((field) => field.name === label)) continue;
     for (const match of text.matchAll(regex)) {
       matches.push({
         id: `${label}-${match.index}`,
