@@ -31,6 +31,45 @@ function deferred<T>() {
 }
 
 describe("MagicBox", () => {
+  it("navigates fields with arrows, Home and End without taking over text input or host keys", async () => {
+    const user = userEvent.setup();
+    const spans = [person, { ...person, id: "second", start: 6, end: 11 }];
+    const { rerender } = render(
+      <MagicBox defaultValue="Alice Alice" defaultSpans={spans} onExtract={extract} />,
+    );
+    const first = screen.getByRole("button", { name: "1. Person: Alice" });
+    const second = screen.getByRole("button", { name: "2. Person: Alice" });
+    first.focus();
+    await user.keyboard("{ArrowDown}");
+    expect(document.activeElement).toBe(second);
+    expect(second.getAttribute("aria-pressed")).toBe("true");
+    await user.keyboard("{ArrowDown}");
+    expect(document.activeElement).toBe(second);
+    await user.keyboard("{Home}");
+    expect(document.activeElement).toBe(first);
+    await user.keyboard("{End}");
+    expect(document.activeElement).toBe(second);
+    fireEvent.keyDown(second, { key: "ArrowUp", isComposing: true });
+    expect(document.activeElement).toBe(second);
+    fireEvent.keyDown(second, { key: "ArrowUp", ctrlKey: true });
+    expect(document.activeElement).toBe(second);
+    rerender(
+      <MagicBox
+        defaultValue="Alice Alice"
+        defaultSpans={spans}
+        onExtract={extract}
+        rootProps={{ onKeyDown: (event) => event.preventDefault() }}
+      />,
+    );
+    fireEvent.keyDown(second, { key: "ArrowUp" });
+    expect(document.activeElement).toBe(second);
+    rerender(<MagicBox defaultValue="Alice Alice" defaultSpans={spans} onExtract={extract} />);
+    await user.click(screen.getByRole("button", { name: "Edit text" }));
+    const input = screen.getByRole("textbox");
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+    expect(document.activeElement).toBe(input);
+  });
+
   it("keeps controller actions stable while calling the latest committed host callbacks", async () => {
     const first = vi.fn(async () => [person]);
     const second = vi.fn(async () => [{ ...person, label: "Updated" }]);

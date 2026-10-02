@@ -170,6 +170,36 @@ function MagicBoxImpl<T, TSchema>(props: MagicBoxProps<T, TSchema>, ref: Ref<HTM
           event.preventDefault();
           box.cancel();
         }
+        if (
+          event.defaultPrevented ||
+          event.altKey ||
+          event.ctrlKey ||
+          event.metaKey ||
+          event.shiftKey ||
+          event.nativeEvent.isComposing ||
+          event.nativeEvent.keyCode === 229 ||
+          !["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key) ||
+          !(event.target instanceof HTMLElement)
+        )
+          return;
+        const field = event.target.closest<HTMLButtonElement>('[data-part="field"]');
+        const buttons = [
+          ...(fields.current?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)") ?? []),
+        ];
+        const current = field ? buttons.indexOf(field) : -1;
+        if (current < 0) return;
+        const next =
+          event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? buttons.length - 1
+              : Math.max(
+                  0,
+                  Math.min(buttons.length - 1, current + (event.key === "ArrowDown" ? 1 : -1)),
+                );
+        event.preventDefault();
+        buttons[next]!.focus();
+        buttons[next]!.click();
       }}
     >
       <div data-part="workspace">

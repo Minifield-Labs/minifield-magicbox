@@ -2,6 +2,25 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { caseNote } from "../../demo/fixtures";
 
+test("arrow keys inspect fields while keeping native text editing", async ({ page }) => {
+  await page.goto("/");
+  const fields = page.locator('[data-part="field"]');
+  await fields.first().focus();
+  await fields.first().press("ArrowDown");
+  await expect(fields.nth(1)).toBeFocused();
+  await expect(fields.nth(1)).toHaveAttribute("aria-pressed", "true");
+  await fields.nth(1).press("End");
+  await expect(fields.last()).toBeFocused();
+  await fields.last().press("ArrowDown");
+  await expect(fields.last()).toBeFocused();
+  await fields.last().press("Home");
+  await expect(fields.first()).toBeFocused();
+  await page.getByRole("button", { name: "Edit text" }).click();
+  const input = page.getByRole("textbox");
+  await input.press("ArrowDown");
+  await expect(input).toBeFocused();
+});
+
 test("original two-pane presentation, inspection, edit, keyboard shortcut, cancellation, and clear", async ({
   page,
 }) => {
